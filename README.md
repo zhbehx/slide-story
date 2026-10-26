@@ -2,6 +2,8 @@
 
 > 先定唯一结论，再拆三个论点，把每页标题写成判断句。让「只读标题就能做决定」成为验收标准。
 
+![PPT 叙事大纲](./market/social-preview.png)
+
 [![Agent Skill](https://img.shields.io/badge/Agent%20Skill-SKILL.md-111827)](./SKILL.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](./LICENSE)
 [![No deps](https://img.shields.io/badge/依赖-无-0ea5e9)](#)
@@ -91,6 +93,8 @@ slide-story/
 └── examples/
     └── 01-outline.md             # 10 分钟决策汇报：0 → 100 分
 ```
+
+> `market/social-preview.png` 是本仓的社交预览图（1280×640），也用于 README 顶部与分享卡片。改文案后跑 `python ../make_previews.py --only slide-story` 重新生成。
 
 ## 自定义
 
