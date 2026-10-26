@@ -12,6 +12,9 @@
 
 写作与工具：[爆款文案工坊](https://github.com/zhbehx/viral-copy)（出稿）· [AI 味检测器](https://github.com/zhbehx/ai-tell)（检测 AI 味）
 
+避坑与决策：[JD 红旗检测](https://github.com/zhbehx/jd-redflag) · [合同风险扫描](https://github.com/zhbehx/contract-redflag) · [会议成本](https://github.com/zhbehx/meeting-cost)
+发布与沟通：[隐私自查](https://github.com/zhbehx/privacy-scan) · [职场语气](https://github.com/zhbehx/tone-check)
+
 ---
 
 ## 为什么不是「帮我列个 PPT 大纲」
