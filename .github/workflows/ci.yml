@@ -33,6 +33,34 @@ jobs:
       - name: 脚本冒烟（示例输入必须能跑）
         run: python scripts/check_outline.py examples/fixtures/outline.txt --minutes 10
 
+      - name: 判断句判定边界（名词短语不该放行，动作句不该漏判）
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, "scripts")
+          from check_outline import is_judgment
+
+          cases = [
+              ("续费改进方案", False),
+              ("实施方案", False),
+              ("用户画像", False),
+              ("数据", False),
+              ("我们下季度只做三件事", True),
+              ("因为渠道单一，所以增长放缓", True),
+              ("流失的 63% 集中在小客户", True),
+              ("竞品靠低价，我们靠交付速度", True),
+              ("先做这两步，其他下季度", True),
+              ("不是价格，而是没被教会", True),
+          ]
+          bad = []
+          for title, expect in cases:
+              got = is_judgment(title)
+              if got != expect:
+                  bad.append(f"{title}: 期望{expect} 实际{got}")
+          assert not bad, "判断句判定错误: " + "; ".join(bad)
+          print(f"judgment OK ({len(cases)} 条边界用例)")
+          PY
+
       - name: README 相对链接可解析
         run: |
           python - <<'PY'
