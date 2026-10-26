@@ -8,7 +8,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](./LICENSE)
 [![No deps](https://img.shields.io/badge/依赖-无-0ea5e9)](#)
 
-职场五件套之一：[`resume-tailor`](https://github.com/zhbehx/resume-tailor) · [`interview-coach`](https://github.com/zhbehx/interview-coach) · [`weekly-report`](https://github.com/zhbehx/weekly-report) · [`slide-story`](https://github.com/zhbehx/slide-story) · [`meeting-actions`](https://github.com/zhbehx/meeting-actions)
+职场五件套：[`resume-tailor`](https://github.com/zhbehx/resume-tailor) · [`interview-coach`](https://github.com/zhbehx/interview-coach) · [`weekly-report`](https://github.com/zhbehx/weekly-report) · [`meeting-actions`](https://github.com/zhbehx/meeting-actions)
+
+写作与工具：[爆款文案工坊](https://github.com/zhbehx/viral-copy)（出稿）· [AI 味检测器](https://github.com/zhbehx/ai-tell)（检测 AI 味）
 
 ---
 
