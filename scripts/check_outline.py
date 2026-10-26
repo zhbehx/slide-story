@@ -30,11 +30,28 @@ NOUN_ONLY = {
 }
 
 # 判断句标记：因果、对比、数量、行动、结论
+# 兜底关键词：只保留多字词，单字词（改/加/是/在/会/能…）是误判主因，已移除
 JUDGE = [
-    "因为", "所以", "主因", "源于", "导致", "造成", "差在", "优于", "不如", "高于", "低于",
-    "只需", "建议", "应该", "要做", "先做", "可以", "是", "在", "比", "vs", "会", "能",
-    "没有", "不是", "已经", "仍", "还", "必须", "拆", "改", "加", "砍",
+    "因为", "所以", "主因", "源于", "导致", "造成", "从而", "使得",
+    "差在", "优于", "不如", "高于", "低于", "相比", "而非",
+    "只需", "建议", "应该", "要做", "先做", "只做", "必做",
+    "没有", "不是", "已经", "必须", "结论", "请求", "值得",
 ]
+
+# 三条句式规则：任一命中即视为判断句
+RULE_CAUSAL = re.compile(r"(因为|由于|源于|主因是|之所以).{2,}(所以|因此|导致|使得|从而|才)")
+RULE_QUANT = re.compile(r"\d+.{0,12}(个|件|步|倍|%|人|天|周|月|年)")
+RULE_ACTION = re.compile(
+    r"(只做|只需|先做|要做|要做完|拆成|砍到|压到|改成|砍掉|删掉|加上|换成|拆|砍|改)"
+)
+VERB_ACTION = re.compile(
+    r"(做|改|加|砍|拆|删|换|提|降|压|缩|扩|拆成|上线|交付|完成|放弃)"
+)
+RULE_CONTRAST = re.compile(r"(不如|优于|高于|低于|相比|而非|不是.{1,12}而是)")
+
+# 含中文逗号且两侧都是 ≥5 字的短句 → 对比/并列型判断句
+# 例：「竞品靠低价，我们靠交付速度」
+RULE_CLAUSE = re.compile(r"^.{5,}[，,].{5,}$")
 NUMBER_RE = re.compile(r"\d")
 PAGE_RE = re.compile(r"(?:^|\s)(?:P|p|第)\s*(\d+)\s*(?:页)?\s*[:：、.]?\s*(.+)$")
 
@@ -59,6 +76,33 @@ def parse_pages(text: str) -> list[dict]:
     return pages
 
 
+def is_judgment(title: str) -> bool:
+    """判断标题是不是「判断句」（有观点/因果/数量/对比），而不是名词短语。
+
+    三条句式规则任一命中即为判断句；多字关键词表与数字作为兜底。
+    「续费改进方案」这种名词短语不该因为含「改」字就放行。
+    """
+    t = title.strip()
+    if not t:
+        return False
+    if RULE_CAUSAL.search(t) or RULE_CONTRAST.search(t):
+        return True
+    if RULE_CLAUSE.match(t) and VERB_ACTION.search(t):
+        return True
+    # 数量断言：有数字 + 有动作词
+    if RULE_QUANT.search(t) and VERB_ACTION.search(t):
+        return True
+    # 动作型：「只做三件事」「先做这两步」
+    if RULE_ACTION.search(t) and not t.endswith("方案"):
+        return True
+    if any(k in t for k in JUDGE):
+        return True
+    # 纯数字标题（如「6 个动作」）也算有信息量
+    if NUMBER_RE.search(t) and cjk_len(t) >= 6:
+        return True
+    return False
+
+
 def cjk_len(s: str) -> int:
     return len(re.sub(r"\s", "", s))
 
@@ -73,7 +117,7 @@ def analyze(text: str, minutes: float | None) -> dict:
         t = p["title"]
         low = t.lower().strip(" ：:。.")
         is_noun = low in NOUN_ONLY or (cjk_len(t) <= 4 and not NUMBER_RE.search(t))
-        has_judge = any(k in low for k in JUDGE) or bool(NUMBER_RE.search(t))
+        has_judge = is_judgment(t)
         if is_noun and not has_judge:
             waste.append(f"P{p['page']} {t}")
         elif not has_judge:
