@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 校验 SKILL.md frontmatter
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path("SKILL.md").read_text(encoding="utf-8")
+          assert text.startswith("---\n"), "SKILL.md 必须以 YAML frontmatter 开头"
+          fm = text.split("---", 2)[1]
+          for key in ("name:", "description:"):
+              assert key in fm, f"frontmatter 缺少 {key}"
+          print("frontmatter OK")
+          PY
+
+      - name: 脚本语法
+        run: python -m py_compile scripts/*.py
+
+      - name: 脚本冒烟（示例输入必须能跑）
+        run: python scripts/check_outline.py examples/fixtures/outline.txt --minutes 10
+
+      - name: README 相对链接可解析
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          text = Path("README.md").read_text(encoding="utf-8")
+          bad = [m.group(1) for m in re.finditer(r"\]\((\./[^)#]+)\)", text) if not Path(m.group(1)).exists()]
+          assert not bad, f"README 里有死链: {bad}"
+          print("links OK")
+          PY
