@@ -121,3 +121,11 @@ A：这个 skill 只做叙事与大纲（这一步决定 80% 的质量）。生�
 ## License
 
 [MIT](./LICENSE)
+
+---
+
+本仓库是 [zhbehx 的 Agent Skill 合集](https://github.com/zhbehx) 之一。
+
+觉得有用就点个 ⭐，是我继续加词库、加行业的动力。
+
+<!-- zhbehx-collection-footer -->
